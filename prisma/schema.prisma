@@ -11,7 +11,53 @@ datasource db {
 }
 
 model User {
-  id   Int    @id @default(autoincrement())
-  name String
-  role String
+  id             String          @id @default(uuid())
+  birthday       DateTime
+  name           String
+  role           Role            @default(USER)
+  email          String?         @unique
+  preferences    Json?
+  blob           Bytes
+  writtenPosts   Post[]          @relation("WrittenPosts") //the user's works
+  favoritePosts  Post[]          @relation("FavoritePosts") // the user's love
+  UserPreference UserPreference?
+
+  // we can not have the same user with save birthday and name, just an example
+  @@unique([birthday, name])
+  @@index([email])
+}
+
+model UserPreference {
+  id           String  @id @default(uuid())
+  emailUpdates Boolean
+  user         User    @relation(fields: [userId], references: [id])
+  userId       String  @unique
+}
+
+model Post {
+  id            String     @id @default(uuid())
+  title         String
+  averateRating Float
+  author        User       @relation("WrittenPosts", fields: [authorId], references: [id])
+  body          String
+  cratedAt      DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  authorId      String
+  favoritedBy   User?      @relation("FavoritePosts", fields: [favoritedById], references: [id])
+  favoritedById String?
+  Catagory      Catagory[]
+
+  @@index([id])
+}
+
+model Catagory {
+  id    String @id @default(uuid())
+  name  String @unique
+  posts Post[]
+}
+
+enum Role {
+  ADMIN
+  USER
+  GUEST
 }

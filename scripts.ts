@@ -9,8 +9,9 @@ const prisma = new PrismaClient();
 const main = async () => {
   // const user = await prisma.user.create({ data: { name: "Elsa", role: "user" } });
   // console.log(user);
-  const users = await prisma.user.findMany();
-  console.log(users);
+  // const users = await prisma.user.findMany();
+  // console.log(users);
+  await prisma.user.deleteMany();
 };
 
 main()
