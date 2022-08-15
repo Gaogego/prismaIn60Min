@@ -11,16 +11,17 @@ datasource db {
 }
 
 model User {
-  id             String          @id @default(uuid())
-  birthday       DateTime
-  name           String
-  role           Role            @default(USER)
-  email          String?         @unique
-  preferences    Json?
-  blob           Bytes
-  writtenPosts   Post[]          @relation("WrittenPosts") //the user's works
-  favoritePosts  Post[]          @relation("FavoritePosts") // the user's love
-  UserPreference UserPreference?
+  id               String          @id @default(uuid())
+  birthday         DateTime
+  name             String
+  role             Role            @default(USER)
+  email            String?         @unique
+  preferences      Json?
+  blob             Bytes?
+  writtenPosts     Post[]          @relation("WrittenPosts") //the user's works
+  favoritePosts    Post[]          @relation("FavoritePosts") // the user's love
+  userPreference   UserPreference? @relation(fields: [userPreferenceId], references: [id])
+  userPreferenceId String?         @unique
 
   // we can not have the same user with save birthday and name, just an example
   @@unique([birthday, name])
@@ -30,8 +31,7 @@ model User {
 model UserPreference {
   id           String  @id @default(uuid())
   emailUpdates Boolean
-  user         User    @relation(fields: [userId], references: [id])
-  userId       String  @unique
+  User         User?
 }
 
 model Post {
